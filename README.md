@@ -1,6 +1,45 @@
 # Security Study Portfolio
 
-A curated, English-language portfolio of security wargame and CTF write-ups and technical study notes, originally authored in Korean on a personal security-research blog ("Lambda's Notebook") and reorganized by topic for review purposes. The material spans binary exploitation, reverse engineering, web exploitation, and miscellaneous CTF challenges spanning infrastructure and AI/LLM security.
+A curated, English-language collection of cybersecurity studies, authorized wargame/CTF write-ups, and defensive engineering experience. The original Korean notes were published over time on [Lambda's Notebook](https://lambda-c.tistory.com/); this GitHub repository was subsequently reorganized for easier technical review.
+
+The material covers binary exploitation, reverse engineering, web security, AI/LLM security, and a separate collaborative OpenSSH-log analysis tool. **The training challenges are not presented as independently discovered real-world vulnerabilities.**
+
+## Source chronology and verification
+
+The English collection was initially committed on **2026-10-11**, but the Korean source notes predate that consolidation. Representative dated posts include:
+
+- [2025-08-05 — Web CTF analyses](https://lambda-c.tistory.com/31)
+- [2025-08-12 — Return to Library](https://lambda-c.tistory.com/32)
+- [2025-10-26 — Shellcode/ORW training](https://lambda-c.tistory.com/37)
+- [2025-11-05 — Stack canary exercises](https://lambda-c.tistory.com/40)
+- [2025-11-16 — Mixed CTF and LLM-security exercises](https://lambda-c.tistory.com/41)
+- [2025-11-17 — ROP training](https://lambda-c.tistory.com/42)
+
+These blog posts document the **earlier study chronology**; the English documents are edited and reorganized versions, not new vulnerability discoveries dated to October 2026.
+
+## Selected case studies
+
+The following five case studies emphasize **root-cause reasoning and defensive remediation** rather than the number of challenges solved. Expanded summaries and evidence links are in [CASE_STUDIES.md](CASE_STUDIES.md).
+
+| Case | English technical analysis | Defensive takeaway | Dated original |
+|---|---|---|---|
+| Web vulnerability chains | [SSTI, SQLi, SSRF and injection analysis](web-exploitation/01-web-ctf-writeup.md) | Treat user input as data; parameterize queries and enforce outbound network restrictions | [2025-08-05](https://lambda-c.tistory.com/31) |
+| Stack canary and data disclosure | [Stack canary and memory-error exercises](binary-exploitation/08-stack-canary-leak-and-bypass.md) | Use bounded I/O and complementary memory mitigations; disclose incomplete results | [2025-11-05](https://lambda-c.tistory.com/40) |
+| Return-to-libc | [Memory-safety root cause under NX](binary-exploitation/09-return-to-libc-ret2libc.md) | Correct the underlying buffer overflow; combine PIE/ASLR and control-flow protections | [2025-08-12](https://lambda-c.tistory.com/32) |
+| ROP and GOT hardening | [ROP, ret2main and GOT behavior](binary-exploitation/10-rop-ret2libc-and-ret2main.md) | Understand RELRO, NX and defense-in-depth | [2025-11-17](https://lambda-c.tistory.com/42) |
+| LLM and Python evaluator security | [Prompt security and expression-evaluation challenges](misc-ctf/01-ctf-writeup-misc-challenges.md) | Do not treat prompts or string filters as robust security boundaries | [2025-11-16](https://lambda-c.tistory.com/41) |
+
+## Defensive engineering — SSH Log Analyzer (collaborative)
+
+**SSH Log Analyzer** is a separate, privately developed Python defensive tool for interpreting OpenSSH authentication events and flagging potentially suspicious repeated authentication failures or account-guessing patterns. It was a **two-person project**, distinct from the training write-ups in this repository.
+
+**My contribution:** implementation and verification of the authentication-event parser and analyzer; IPv4/IPv6 and password/public-key log handling; IP/account aggregation; configurable time-window analysis; CLI, console/JSON/CSV outputs, input/output safeguards; automated regression tests, package build, and Ubuntu deployment checks.
+
+**Teammate's contribution:** an authorized Ubuntu cloud test environment; anonymized real-log experiments; time-of-day and detection-threshold comparisons; charts, performance measurements, and assessment of detection limitations.
+
+**Evidence and status:** In the reviewed August 2026 project records, the core analyzer had a **139-test passing regression baseline**, was installed and verified in an authorized Ubuntu/OpenSSH environment, and produced console, JSON, and CSV results from an actual 90-line journal sample. These are historical recorded results **not independently re-run for this publication**. Some unusual OpenSSH log variants were not reproduced during live tests; a later experimental-results integration had not yet been completed in the last reviewed status. Without labeled ground truth, no measured general detection accuracy or false-positive rate is claimed.
+
+The project's GitHub source and internal records remain private. No raw authentication logs, identifying IP addresses, hostnames, credentials, private documentation URLs, or teammate personal information are published here. This project represents **defensive implementation and testing**, not a CVE or a production-vulnerability disclosure.
 
 ## Contents
 
@@ -15,4 +54,4 @@ Each write-up follows a consistent structure — **Overview → Vulnerability An
 
 ## Scope & Disclaimer
 
-All work in this repository was performed against **intentionally vulnerable wargame and CTF targets** — including Dreamhack, pwnable.tw, pwnable.kr, Layer7 CTF, and self-hosted CTFd instances — for educational purposes in authorized training environments. No production systems, third-party infrastructure, or real-world targets were accessed or tested at any point. Flag values, credentials, and challenge-specific secrets appearing in source code excerpts are either already public (part of published wargame materials) or have been redacted where the original source material redacted them.
+The four topic directories document **intentionally vulnerable wargame and CTF targets**, including Dreamhack, pwnable.tw, pwnable.kr, Layer7 CTF, and self-hosted CTFd instances. They are educational analyses in authorized training environments and do **not** represent independently discovered production vulnerabilities. The separately described SSH Log Analyzer project involved legitimate defensive log analysis in an authorized server environment, rather than vulnerability discovery or offensive testing of third-party infrastructure. Flag values, credentials, and challenge-specific secrets in source excerpts are public training data or have been redacted where appropriate.
