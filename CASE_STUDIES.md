@@ -1,6 +1,6 @@
 # Selected Security Case Studies
 
-The cases below were selected for methodological clarity, root-cause analysis, and defensive conclusions. They concern intentionally vulnerable **authorized training targets**, not undisclosed findings in real-world products.
+The cases below were selected for methodological clarity, root-cause analysis, and defensive conclusions. Cases 1–5 concern intentionally vulnerable **authorized training targets**. Case 6 is different: it documents **original, independently discovered vulnerabilities in real, published WordPress plugins**, reported through WPScan's coordinated-disclosure process.
 
 ## 1. Web applications: dangerous sinks and trust boundaries
 
@@ -37,9 +37,18 @@ The cases below were selected for methodological clarity, root-cause analysis, a
 - **Analysis:** Training challenges illustrate why prompt text is not a dependable authorization boundary and why a restricted character set is not equivalent to a restricted interpreter. The original chatbot record explicitly notes that an observed result was not reliably repeatable.
 - **Defensive lessons:** Keep secrets outside model-visible untrusted contexts; do not execute untrusted Python expressions via `eval()`; choose narrowly scoped parsers with explicit allowed grammars.
 
+## 6. Real-world responsible disclosure: WordPress plugin vulnerabilities
+
+- **Technical write-up:** [Two WordPress plugin vulnerabilities submitted to WPScan](responsible-disclosure/01-wordpress-plugin-vulnerability-disclosures.md)
+- **Targets:** reCAPTCHA for MW WP Form (CAPTCHA bypass, WPScan submission #56579) and Under Construction (role-restriction bypass, WPScan submission #56580) — both currently-published WordPress.org plugins, reviewed only in a local, self-hosted lab.
+- **Analysis:** A `isset()`-vs-truthiness mismatch between two code paths that read the same POST field lets an attacker skip Google reCAPTCHA verification with one extra, falsy field. Separately, a role-restriction feature is wired to the wrong WordPress action hooks, so it never actually gates the front-end request path it is meant to protect.
+- **Verification standard:** both findings were reproduced against the plugin's real front-end invocation path at the privilege level claimed, not via `wp eval`/direct database manipulation — the exact standard that caused an earlier, unrelated candidate finding in this research pass to be retracted before submission.
+- **Evidence:** WPScan's own confirmation emails (submission IDs, titles, and triage priority) are quoted in the write-up.
+- **Defensive lessons:** Never let a client-supplied field skip a security check by presence alone — check it the same way the rest of the application does; make sure every access-control check is wired onto the request path it is actually meant to protect.
+
 ## Separate defensive engineering project: SSH Log Analyzer
 
-The **SSH Log Analyzer** is a private **collaborative Python project**, not one of the five CTF case studies.
+The **SSH Log Analyzer** is a private **collaborative Python project**, not one of the CTF case studies above.
 
 - **Purpose:** Structure OpenSSH authentication logs, aggregate failures by source and account, and identify repeated-failure patterns for human review.
 - **My responsibilities:** Core parser and analysis engine, CLI and output formats, validation, regression tests, packaging, and deployment verification.
@@ -50,4 +59,4 @@ The **SSH Log Analyzer** is a private **collaborative Python project**, not one 
 
 ## Scope statement
 
-The dated Korean source posts establish an activity timeline; this English collection is a later editorial consolidation. CTF/wargame solutions demonstrate security reasoning **in intentionally vulnerable learning environments**, while SSH Log Analyzer demonstrates **defensive software construction and testing in an authorized environment**. Neither constitutes an independently disclosed production CVE.
+The dated Korean source posts establish an activity timeline; this English collection is a later editorial consolidation. CTF/wargame solutions demonstrate security reasoning **in intentionally vulnerable learning environments**, while SSH Log Analyzer demonstrates **defensive software construction and testing in an authorized environment**. The responsible-disclosure case (Case 6) is the exception to both: it is original vulnerability research against real, published software, submitted to WPScan as described in that write-up's evidence section.
